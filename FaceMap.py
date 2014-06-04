@@ -8,7 +8,7 @@ class FaceMap(QtGui.QMainWindow):
         super(FaceMap, self).__init__()
         self.initUI()
     
-    # Make a maximised, drop-enabled window with a custom toolbar
+    # Make a drop-enabled window with a custom toolbar
     # along the left hand side   
     def initUI(self):
         self.setGeometry(100, 100, 600, 400)
@@ -23,8 +23,14 @@ class FaceMap(QtGui.QMainWindow):
         newPerson = QtGui.QAction(QtGui.QIcon('new_person.jpg'), 'New', self)
         newPerson.setShortcut('Ctrl+N')
         newPerson.triggered.connect(self.chooseFiles)
+        
+        saveImage = QtGui.QAction(QtGui.QIcon('save_pictures.jpg'), 'Save', self)
+        saveImage.setShortcut('Ctrl+S')
+        saveImage.triggered.connect(self.saveImage)
+        
         self.toolbar = QtGui.QToolBar()
         self.toolbar.addAction(newPerson)
+        self.toolbar.addAction(saveImage)
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolbar)
     
     # Add a central widget with no (default absolute) layout
@@ -35,9 +41,15 @@ class FaceMap(QtGui.QMainWindow):
     
     # Create a file-chooser dialog to pick images
     def chooseFiles(self):
-        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file', 
+        fnames = QtGui.QFileDialog.getOpenFileNames(self, 'Open file', 
                 '/home', 'Image Files (*.png *.jpg *.bmp, *gif)')
-        self.centralWidget.addDraggableImageToList(fname)
+        for fname in fnames:
+            if fname:
+                self.centralWidget.addDraggableFrame(fname)
+                
+    # Create a file-chooser dialog to pick images
+    def saveImage(self):
+        self.centralWidget.saveWidgetAsImage()
     
 def main():
     
