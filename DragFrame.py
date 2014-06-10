@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from PyQt4 import QtCore, QtGui
 
 class DragFrame(QtGui.QFrame):
@@ -9,6 +9,7 @@ class DragFrame(QtGui.QFrame):
     def __init__(self, parent, index):
         super(DragFrame, self).__init__(parent)
         self.index = index
+        self.oldName = ''
         self.initUI()
         
     def initUI(self):        
@@ -102,4 +103,28 @@ class DragFrame(QtGui.QFrame):
             DragFrame._lastY += 0   
             
         self.move(DragFrame._lastX, DragFrame._lastY)
-       
+        
+    # Save to image file
+    def saveFrameAsImage(self, subdir, qaSuffix, numSuffix):
+        pixmap = QtGui.QPixmap(self.size())
+        self.render(pixmap)
+        filename = 'df' + qaSuffix + str(numSuffix) + '.png'
+        path = os.path.join(subdir, filename)
+        pixmap.save(path)
+        #pixmap.save("/images/questionFrame.png");
+        
+    # Replace name label with question marks
+    def replaceNameWithQuestionMarks(self):
+        self.oldName = self.nameLabel.text()
+        self.nameLabel.setText("???????")
+        self.nameLabel.setStyleSheet("QLabel { color: red; border: 2px solid red; font: bold; }")
+        
+    # Restore the name label
+    def restoreNameLabelHighlightAnswer(self):
+        self.nameLabel.setText(self.oldName)
+        self.nameLabel.setStyleSheet("QLabel { color: red; border: 2px solid red; }")
+        
+    # Restore the name label colour to the original
+    def restoreNameLabelColor(self):
+        self.nameLabel.setStyleSheet("QLabel { color: black; border: 2px solid black; }")
+        

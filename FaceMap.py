@@ -47,9 +47,9 @@ class FaceMap(QtGui.QMainWindow):
             if fname:
                 self.centralWidget.addDraggableFrame(fname)
                 
-    # Create a file-chooser dialog to pick images
+    # Create a file-chooser dialog to save images
     def saveImage(self):
-        self.centralWidget.saveWidgetAsImage()
+        self.centralWidget.createQuestionImages()
     
 def main():
     
