@@ -2,7 +2,6 @@ import os
 
 from PyQt4 import QtGui, QtCore
 from DragFrame import *
-import calendar, time
 
 class CentralWidget(QtGui.QWidget):
     _newFrameIndex = 0;

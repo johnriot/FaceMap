@@ -22,21 +22,17 @@ def testFunction():
     global faceMap
     faceMap = FaceMap.FaceMap(faceMapDir)
     imageSetId = faceMap.getImageSetId()
-    writeToAnkiWhenImagesReady(imageSetId)
+    imagesDir = unicode(os.path.join(faceMapDir, "images" + str(imageSetId)))
+    writeToAnkiWhenImagesReady(imagesDir)
 
 # Once the images are written, we should take those
 # files and write cards to Anki   
-def writeToAnkiWhenImagesReady(imageSetId):
+def writeToAnkiWhenImagesReady(imagesDir):
     global ankiWriter
-    ankiWriter = AnkiWriter(imageSetId)
+    ankiWriter = AnkiWriter(imagesDir)
     ankiWriteSignal = ankiWriter.getSignal()
     faceMap.setAnkiWriteSignal(ankiWriteSignal)
 
-# Remove files - cleanup only
-def removeFiles():
-    pass
-    #files = (u'dfA0.png', u'cwQ.png')
-    #mw.col.media.removeExisting(files)
     
 # create a new menu item, "test"
 action = QAction("test", mw)

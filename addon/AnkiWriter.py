@@ -5,13 +5,16 @@ import os
 from PyQt4 import QtCore
 
 from aqt.utils import showInfo
+import aqt.progress
+from aqt.utils import tooltip
+import shutil
 
 class AnkiWriter(QtCore.QObject):
     writeAnkiSignal = QtCore.pyqtSignal()
     
-    def __init__(self, imageSetId):
+    def __init__(self, imagesDir):
         super(AnkiWriter, self).__init__()
-        self.imageSetId = imageSetId
+        self.imagesDir = imagesDir
         # select deck. mw is a global initialised in __init__.py
         # col is in collection.py. decks is in decks.py
         did = mw.col.decks.id("TestDeck")
@@ -22,24 +25,26 @@ class AnkiWriter(QtCore.QObject):
         # Deck is a dict description of values for the deck, next line specifies the model id
         deck['mid'] = m['id']
         mw.col.decks.save(deck)
-        
+        # Direct the code where to go when we get an emit() on this signal
         self.writeAnkiSignal.connect(self.writeToDeck)
         
     def getSignal(self):
         return self.writeAnkiSignal
         
     def writeToDeck(self):
+        # Pop up a Progress Dialog
+        progress = aqt.progress.ProgressManager(self)
+        progress.start(label=_("Adding Cards..."), immediate=True)
         # Add each created image to the media folder
         # TODO: Must change to os.path for Unix compatibility
-        # uniDirName = unicode("C:/Users/John/workspace/PythonScripts/face_map/images")
-        uniDirName = unicode("C:/Users/John/Documents/Anki/addons/face_map/images" + str(self.imageSetId))
+        uniDirName = unicode(self.imagesDir)
         listFiles = os.listdir(uniDirName)
         for fileName in listFiles:
             filePath = unicode(os.path.join(uniDirName, fileName))
             mw.col.media.addFile(filePath)
         
-        
-        # Find an image map
+        newCount = 0
+        # Create a card (4 images) for each person on the map
         for i in range(0, len(listFiles) / 4):
             qWindow, qPerson, aPerson, aWindow = self.findNoteTuple(listFiles, i)
         
@@ -52,8 +57,15 @@ class AnkiWriter(QtCore.QObject):
             note['Front'] += u"<img src='" + qPerson + "'>"
             note['Back'] = u"<img src='" + aPerson + "'>"
             note['Back'] += u"<img src='" + aWindow + "'>"
-            newCount = mw.col.addNote(note)
+            newCount += mw.col.addNote(note)
             note.flush()
+        
+        progress.finish()
+        # Popup to tell users that cards were added
+        tooltip(_("Added %d Notes" % newCount), period=2000)
+        
+        # Remove images folder
+        shutil.rmtree(self.imagesDir)
         
         # Reset the GUI to show updated card counts etc
         mw.reset()
@@ -73,16 +85,6 @@ class AnkiWriter(QtCore.QObject):
             elif(fileString.endswith('cwA' + str(indx) + '.png')):
                 aWindow = fn
             
-            '''
-            if(fileString.startswith('cwQ' + str(indx))):
-                qWindow = fn
-            elif(fileString.startswith('dfQ' + str(indx))):
-                qPerson = fn
-            elif(fileString.startswith('dfA' + str(indx))):
-                aPerson = fn
-            elif(fileString.startswith('cwA' + str(indx))):
-                aWindow = fn
-            '''
         # Make a tuple for the new note
         #showInfo("noteTuple: %s, %s, %s, %s"  % (qWindow, qPerson, aPerson, aWindow))
         return qWindow, qPerson, aPerson, aWindow
