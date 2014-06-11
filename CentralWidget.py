@@ -1,31 +1,18 @@
 import os
 
 from PyQt4 import QtGui, QtCore
-from DragLabel import *
-from DragWidget import *
 from DragFrame import *
-
-
+import calendar, time
 
 class CentralWidget(QtGui.QWidget):
     _newFrameIndex = 0;
     
-    def __init__(self, parent):
+    def __init__(self, parent, imageSetId):
         super(CentralWidget, self).__init__(parent)
+        self.imageSetId = imageSetId
         self.setAcceptDrops(True)
         self.frameList = list()
-        #self.outputDir = self.getOutputDir()
         self.show()
-    
-    # DOESN'T Work TODO: Debug 
-    def getOutputDir(self):
-        newdir = 'images'
-        imagesDir = ''
-        try:
-            imagesDir = os.mkdir(newdir)
-        except Exception:
-            imagesDir = os.path.join(__file__, newdir)
-        return imagesDir
            
         
     # Support for drag event 
@@ -54,8 +41,8 @@ class CentralWidget(QtGui.QWidget):
     
     # Cycle through each of the DragFrames, replacing the name with red ????
     # and turning the border red.
-    def createQuestionImages(self):
-        subdir = 'images'
+    def createQuestionAnswerImages(self, directory):        
+        subdir = os.path.join(directory, ('images' + self.imageSetId))
         try:
             os.mkdir(subdir)
         except Exception:
@@ -71,24 +58,22 @@ class CentralWidget(QtGui.QWidget):
         for frame in self.frameList:
             # Create images for the question
             frame.replaceNameWithQuestionMarks()
-            self.saveWidgetAsImage(subdir, questionSuffix, suffix)
-            frame.saveFrameAsImage(subdir, questionSuffix, suffix)
+            self.saveWidgetAsImage(subdir, self.imageSetId, questionSuffix, suffix)
+            frame.saveFrameAsImage(subdir, self.imageSetId, questionSuffix, suffix)
             
             # Create images for the answer
             frame.restoreNameLabelHighlightAnswer()
-            self.saveWidgetAsImage(subdir, answerSuffix, suffix)
-            frame.saveFrameAsImage(subdir, answerSuffix, suffix)
+            self.saveWidgetAsImage(subdir, self.imageSetId, answerSuffix, suffix)
+            frame.saveFrameAsImage(subdir, self.imageSetId, answerSuffix, suffix)
             frame.restoreNameLabelColor()
             suffix+=1
             
     
     # Save to image file
-    def saveWidgetAsImage(self, subdir, qaSuffix, suffix):
+    def saveWidgetAsImage(self, subdir, filePre, qaSuffix, suffix):
         pixmap = QtGui.QPixmap(self.size())
         self.render(pixmap)
-        filename = 'cw' + qaSuffix + str(suffix) + '.png'
+        filename = filePre + 'cw' + qaSuffix + str(suffix) + '.png'
         path = os.path.join(subdir, filename)
-        # Find out why this doesn't work
-        #path = os.path.join(self.outputDir, filename)
         pixmap.save(path)
           

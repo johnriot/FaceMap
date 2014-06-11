@@ -105,10 +105,10 @@ class DragFrame(QtGui.QFrame):
         self.move(DragFrame._lastX, DragFrame._lastY)
         
     # Save to image file
-    def saveFrameAsImage(self, subdir, qaSuffix, numSuffix):
+    def saveFrameAsImage(self, subdir, filePre, qaSuffix, numSuffix):
         pixmap = QtGui.QPixmap(self.size())
         self.render(pixmap)
-        filename = 'df' + qaSuffix + str(numSuffix) + '.png'
+        filename = filePre + 'df' + qaSuffix + str(numSuffix) + '.png'
         path = os.path.join(subdir, filename)
         pixmap.save(path)
         #pixmap.save("/images/questionFrame.png");
