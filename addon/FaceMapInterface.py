@@ -5,6 +5,10 @@ from aqt import mw
 from aqt.utils import showInfo
 # import all of the Qt GUI library
 from aqt.qt import *
+# Allow to hook into file
+from anki import hooks
+
+from resources import *
 
 import os
 
@@ -32,11 +36,12 @@ def writeToAnkiWhenImagesReady(imagesDir):
     ankiWriter = AnkiWriter(imagesDir)
     ankiWriteSignal = ankiWriter.getSignal()
     faceMap.setAnkiWriteSignal(ankiWriteSignal)
+  
+# Called from the 'setupEditorButtons' hook from Anki
+def add_face_map_button(ed):
+    ed._addButton("new_person", testFunction,
+            key="Alt+f", tip = "FaceMap", size=False,
+            native=True, canDisable=False)
 
-    
-# create a new menu item, "test"
-action = QAction("test", mw)
-# set it to call testFunction when it's clicked
-mw.connect(action, SIGNAL("triggered()"), testFunction)
-# and add it to the tools menu
-mw.form.menuTools.addAction(action)
+# Hook to add a button for FaceMap
+hooks.addHook('setupEditorButtons', add_face_map_button)

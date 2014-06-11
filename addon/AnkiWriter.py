@@ -17,7 +17,9 @@ class AnkiWriter(QtCore.QObject):
         self.imagesDir = imagesDir
         # select deck. mw is a global initialised in __init__.py
         # col is in collection.py. decks is in decks.py
+        # TODO: Find out how to chose the currently selected deck
         did = mw.col.decks.id("TestDeck")
+        # did = mw.col.decks.current()
         mw.col.decks.select(did)
         # set note type for deck. models is in models.py
         m = mw.col.models.byName("Basic")
