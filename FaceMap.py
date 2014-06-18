@@ -3,9 +3,10 @@ from CentralWidget import *
 import time
 
 class FaceMap(QtGui.QMainWindow):    
-    def __init__(self, directory):
+    def __init__(self, directory, deckName):
         super(FaceMap, self).__init__()
         self.dir = directory
+        self.deckName = deckName
         self.statusBar()
         self.ankiWriteSignal = None
         # Use seconds since 1970 to uniquely identify image folder and images
@@ -16,7 +17,7 @@ class FaceMap(QtGui.QMainWindow):
     # along the left hand side   
     def initUI(self):
         self.setGeometry(100, 100, 600, 400)
-        self.setWindowTitle('FaceMap')
+        self.setWindowTitle('FaceMap - Deck: ' + self.deckName)
         self.addCustomToolBar()
         self.addCentralWidget()
         self.statusBar().showMessage("Ready")
@@ -28,13 +29,11 @@ class FaceMap(QtGui.QMainWindow):
         iconsDir = os.path.join(self.dir, 'icons')
         newPersonIcon = os.path.join(iconsDir, 'new_person.jpg')
         newPerson = QtGui.QAction(QtGui.QIcon(newPersonIcon), 'New', self)
-        #newPerson = QtGui.QAction(QtGui.QIcon('new_person.jpg'), 'New', self)
         newPerson.setShortcut('Ctrl+N')
         newPerson.triggered.connect(self.chooseFiles)
         
         saveImageIcon = os.path.join(iconsDir, 'save_pictures.jpg')
         saveImage = QtGui.QAction(QtGui.QIcon(saveImageIcon), 'Save', self)
-        #saveImage = QtGui.QAction(QtGui.QIcon('save_pictures.jpg'), 'Save', self)
         saveImage.setShortcut('Ctrl+S')
         saveImage.triggered.connect(self.saveImage)
         
@@ -86,7 +85,7 @@ class FaceMap(QtGui.QMainWindow):
     
 def main():
     app = QtGui.QApplication(sys.argv)
-    ex = FaceMap(os.getcwd())
+    ex = FaceMap(os.getcwd(), "No Deck")
     sys.exit(app.exec_())
 
 

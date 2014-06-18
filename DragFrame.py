@@ -1,5 +1,6 @@
 import sys, os
 from PyQt4 import QtCore, QtGui
+import urllib
 
 class DragFrame(QtGui.QFrame):
     _draggedIndex = -1
@@ -83,6 +84,9 @@ class DragFrame(QtGui.QFrame):
         self.vbox.addWidget(self.imageLabel)
         self.nameLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.nameLabel.setStyleSheet("border: 2px solid black")
+        path = urllib.unquote(fileName)
+        shortName = os.path.splitext(os.path.basename(path))[0]
+        self.nameLabel.setText(shortName)
         self.vbox.addWidget(self.nameLabel)
         self.setLayout(self.vbox)
         self.moveNextSpace()

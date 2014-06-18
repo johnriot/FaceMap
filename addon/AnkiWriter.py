@@ -8,26 +8,16 @@ from aqt.utils import showInfo
 import aqt.progress
 from aqt.utils import tooltip
 import shutil
+from anki import notes
 
 class AnkiWriter(QtCore.QObject):
     writeAnkiSignal = QtCore.pyqtSignal()
     
-    def __init__(self, imagesDir):
+    def __init__(self, imagesDir, deckName):
         super(AnkiWriter, self).__init__()
         self.imagesDir = imagesDir
-        # select deck. mw is a global initialised in __init__.py
-        # col is in collection.py. decks is in decks.py
-        # TODO: Find out how to chose the currently selected deck
-        did = mw.col.decks.id("TestDeck")
-        # did = mw.col.decks.current()
-        mw.col.decks.select(did)
-        # set note type for deck. models is in models.py
-        m = mw.col.models.byName("Basic")
-        deck = mw.col.decks.get(did)
-        # Deck is a dict description of values for the deck, next line specifies the model id
-        deck['mid'] = m['id']
-        mw.col.decks.save(deck)
-        # Direct the code where to go when we get an emit() on this signal
+        self.deckName = deckName
+        
         self.writeAnkiSignal.connect(self.writeToDeck)
         
     def getSignal(self):
@@ -38,12 +28,19 @@ class AnkiWriter(QtCore.QObject):
         progress = aqt.progress.ProgressManager(self)
         progress.start(label=_("Adding Cards..."), immediate=True)
         # Add each created image to the media folder
-        # TODO: Must change to os.path for Unix compatibility
         uniDirName = unicode(self.imagesDir)
         listFiles = os.listdir(uniDirName)
         for fileName in listFiles:
             filePath = unicode(os.path.join(uniDirName, fileName))
             mw.col.media.addFile(filePath)
+        
+        # Configure so notes are written to selected deck
+        deck = mw.col.decks.byName(self.deckName)
+        did = deck['id']
+        # The crucial data to write a note to a deck is the did of the
+        # model (saved as _model in the Note class). Create that here
+        model = mw.col.models.byName("Basic")
+        model['did'] = did
         
         newCount = 0
         # Create a card (4 images) for each person on the map
@@ -52,7 +49,7 @@ class AnkiWriter(QtCore.QObject):
         
         
             # Create and add the note
-            note = mw.col.newNote()
+            note = notes.Note(mw.col, model)
             print "qWindow: " + qWindow
             print "aPerson: " + aPerson
             note['Front'] = u"<img src='" + qWindow + "'>"
@@ -60,7 +57,6 @@ class AnkiWriter(QtCore.QObject):
             note['Back'] = u"<img src='" + aPerson + "'>"
             note['Back'] += u"<img src='" + aWindow + "'>"
             newCount += mw.col.addNote(note)
-            note.flush()
         
         progress.finish()
         # Popup to tell users that cards were added
