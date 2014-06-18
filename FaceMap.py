@@ -80,7 +80,7 @@ class FaceMap(QtGui.QMainWindow):
     # Popup a dialog to say the window will close
     def popupGoodbyeDialog(self):
         reply = QtGui.QMessageBox.question(self, 'Success',
-    "FaceMap has successfully\nadded the notes. Goodbye!", QtGui.QMessageBox.Ok, QtGui.QMessageBox.Ok)
+    "FaceMap has successfully\ncompleted. Goodbye!", QtGui.QMessageBox.Ok, QtGui.QMessageBox.Ok)
         self.close()
     
 def main():

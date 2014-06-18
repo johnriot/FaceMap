@@ -11,6 +11,7 @@ class DragFrame(QtGui.QFrame):
         super(DragFrame, self).__init__(parent)
         self.index = index
         self.oldName = ''
+        self.isDeleted = False
         self.initUI()
         
     def initUI(self):        
@@ -49,16 +50,31 @@ class DragFrame(QtGui.QFrame):
     # Prompt the user to check they want to delete the frame      
     def promptDeleteFrame(self):
         reply = self.confirmDeleteFrame()
-        if reply == QtGui.QMessageBox.Yes:        
+        
+        if reply == 0: # Pressed Edit
+            self.showDialog()
+        # if reply == QtGui.QMessageBox.Yes:
+        if reply == 1: # Pressed Delete
+            self.isDeleted = True        
             self.deleteLater()
     
     # Confirm deletion of the person frame
     def confirmDeleteFrame(self):
+        msgBox = QtGui.QMessageBox()
+        msgBox.setText('Edit / Delete Person?')
+        msgBox.addButton(QtGui.QPushButton('Edit'), QtGui.QMessageBox.YesRole)
+        msgBox.addButton(QtGui.QPushButton('Delete'), QtGui.QMessageBox.NoRole)
+        msgBox.addButton(QtGui.QPushButton('Cancel'), QtGui.QMessageBox.RejectRole)
+        ret = msgBox.exec_();
+        #response = msgBox.clickedButton().
+        return ret
+        
+        '''
         reply = QtGui.QMessageBox.question(self, 'Message',
-            "Delete Person?", QtGui.QMessageBox.Yes | 
+            "Delete Person?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.
             QtGui.QMessageBox.No, QtGui.QMessageBox.No)
         return reply
-        
+        '''
        
     # React to a double-click
     def mouseDoubleClickEvent(self, e):
@@ -84,7 +100,7 @@ class DragFrame(QtGui.QFrame):
         self.vbox.addWidget(self.imageLabel)
         self.nameLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.nameLabel.setStyleSheet("border: 2px solid black")
-        path = urllib.unquote(fileName)
+        path = str(urllib.unquote(fileName))
         shortName = os.path.splitext(os.path.basename(path))[0]
         self.nameLabel.setText(shortName)
         self.vbox.addWidget(self.nameLabel)
@@ -115,7 +131,6 @@ class DragFrame(QtGui.QFrame):
         filename = filePre + 'df' + qaSuffix + str(numSuffix) + '.png'
         path = os.path.join(subdir, filename)
         pixmap.save(path)
-        #pixmap.save("/images/questionFrame.png");
         
     # Replace name label with question marks
     def replaceNameWithQuestionMarks(self):
@@ -132,3 +147,7 @@ class DragFrame(QtGui.QFrame):
     def restoreNameLabelColor(self):
         self.nameLabel.setStyleSheet("QLabel { color: black; border: 2px solid black; }")
         
+    # Check if Frame has previously been deleted
+    def isDeleted(self):
+        return self.isDeleted
+    

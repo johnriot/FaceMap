@@ -55,17 +55,19 @@ class CentralWidget(QtGui.QWidget):
         
         # Create an image for each Question Frame
         for frame in self.frameList:
-            # Create images for the question
-            frame.replaceNameWithQuestionMarks()
-            self.saveWidgetAsImage(subdir, self.imageSetId, questionSuffix, suffix)
-            frame.saveFrameAsImage(subdir, self.imageSetId, questionSuffix, suffix)
-            
-            # Create images for the answer
-            frame.restoreNameLabelHighlightAnswer()
-            self.saveWidgetAsImage(subdir, self.imageSetId, answerSuffix, suffix)
-            frame.saveFrameAsImage(subdir, self.imageSetId, answerSuffix, suffix)
-            frame.restoreNameLabelColor()
-            suffix+=1
+            deleted = frame.isDeleted
+            if deleted == False:
+                # Create images for the question
+                frame.replaceNameWithQuestionMarks()
+                self.saveWidgetAsImage(subdir, self.imageSetId, questionSuffix, suffix)
+                frame.saveFrameAsImage(subdir, self.imageSetId, questionSuffix, suffix)
+                
+                # Create images for the answer
+                frame.restoreNameLabelHighlightAnswer()
+                self.saveWidgetAsImage(subdir, self.imageSetId, answerSuffix, suffix)
+                frame.saveFrameAsImage(subdir, self.imageSetId, answerSuffix, suffix)
+                frame.restoreNameLabelColor()
+                suffix+=1
             
     
     # Save to image file
