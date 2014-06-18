@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # import the main window object (mw) from ankiqt
 from aqt import mw
 import os

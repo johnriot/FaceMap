@@ -1,5 +1,6 @@
-import os
+#!/usr/bin/env python
 
+import os
 from PyQt4 import QtGui, QtCore
 from DragFrame import *
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from PyQt4 import QtGui, QtCore
 from CentralWidget import *
 import time

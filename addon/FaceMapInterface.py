@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 # import the main window object (mw) from ankiqt
 from aqt import mw
@@ -28,7 +30,6 @@ def testFunction():
     ret = StudyDeck(mw, current=None, accept=_("Choose"),
         title=_("Choose Deck"))
     deckName = ret.name
-    
     
     faceMapDir = os.path.join(mw.pm.addonFolder(), 'face_map')
     global faceMap
